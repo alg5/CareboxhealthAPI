@@ -30,6 +30,7 @@ module.exports.getJSON = (options, onResult) => {
     });
   
     req.on('error', (err) => {
+      console.log('error: ' + err.message);
       res.send('error: ' + err.message);
     });
   
