@@ -31,7 +31,8 @@ module.exports.getJSON = (options, onResult) => {
   
     req.on('error', (err) => {
       console.log('error: ' + err.message);
-      res.send('error: ' + err.message);
+      // res.send('error: ' + err.message);
+      onResult(500, err.message);
     });
   
     req.end();

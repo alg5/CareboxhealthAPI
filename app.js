@@ -5,8 +5,9 @@ const getRequestReturnData = require("./getRequestReturnData");
 
 const StatusCodeMovedPermanently = 301;
 const urlBase = 'http://covidtracking.com/api/';
-const urlBaseCharts = "https://covid19.richdataservices.com/"
-const urlBaseCovid19 = "https://api.covid19api.com/"
+const urlBaseCovid19 = "https://api.covid19api.com/";
+const urlBaseCoronaVirusStat = "https://corona-virus-stats.herokuapp.com/";
+
 const http = require('http');
 const https = require('https');
 
@@ -50,23 +51,42 @@ app.get("/statescurrent", function(request, response){
 
 app.get("/summarychart", function(request, response){
 
+    let dt =  new Date();
+    
+    // console.log("dt = " + dt);
+    const to = dt.toISOString().split('T')[0];
+    //sub 7 days
+    dt.setDate(dt.getDate() -  7);
+    const from = dt.toISOString().split('T')[0];
+    console.log("from = " + from + 'to = ' + to);
+
     // options.host = "covid19.richdataservices.com";
     options.host = "api.covid19api.com";
     // options.path = `${urlBaseCharts}rds/api/query/int/jhu_country/select?cols=date_stamp,cnt_confirmed,cnt_death,cnt_recovered&where=(iso3166_1=US)&format=amcharts&limit=5000`;
-    options.path = `${urlBaseCovid19}total/country/usa?from=2021-03-01&to=2021-04-02&to=2021-04-02`;
-   
+    options.path = `${urlBaseCovid19}total/country/usa?from=${from}&to=${to}`;
+    console.log("path = " + options.path);
     options.protocolType = "https";
-    
-        // https://api.covid19api.com/total/country/usa?from=2021-03-01
 
-    // https://covid19.richdataservices.com/rds/api/query/int/jhu_country/select?cols=date_stamp,cnt_confirmed,cnt_death,cnt_recovered&where=(iso3166_1=US)&format=amcharts&limit=5000
     getDataFromAPI (request, response, options);
 });
-// app.get("/newcasesbystates", function(request, response){
-//     options.host = "public.tableau.com";
-//     options.path = "https://public.tableau.com/views/CTPWebsiteGallery/1BM_Cases?language=en&display_count=y&origin=viz_share_link&embed=y&showVizHome=n&apiID=host0#navType=0&navSrc=Pars";
-//     getDataFromAPI (request, response, options);
-// });
+
+
+app.get("/totalworldchart", function(request, response){
+
+ 
+    // options.host = "covid19.richdataservices.com";
+    options.host = "corona-virus-stats.herokuapp.com";
+    // options.path = `${urlBaseCharts}rds/api/query/int/jhu_country/select?cols=date_stamp,cnt_confirmed,cnt_death,cnt_recovered&where=(iso3166_1=US)&format=amcharts&limit=5000`;
+    options.path = `${urlBaseCoronaVirusStat}api/v1/cases/general-stats`;
+
+    // https://corona-virus-stats.herokuapp.com/api/v1/cases/general-stats
+    // console.log("path = " + options.path);
+    options.protocolType = "https";
+
+    getDataFromAPI (request, response, options);
+});
+
+
 
 function getDataFromAPI(request, response, options){
     getRequestReturnData.getJSON(options, (statusCode, result) => {
